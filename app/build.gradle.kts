@@ -78,4 +78,5 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     //Ksp
     ksp(libs.androidx.room.compiler)
+    implementation("androidx.room:room-ktx:$room_version")
 }

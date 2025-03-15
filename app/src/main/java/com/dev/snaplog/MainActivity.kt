@@ -16,6 +16,7 @@ import com.dev.snaplog.Presentaion.ScreenLogScreen
 import com.dev.snaplog.Presentaion.View
 import com.dev.snaplog.Presentaion.Viewmodel.ScreenshotFetchViewmodel
 import com.dev.snaplog.Presentaion.Viewmodel.SnapLogViewModel
+import com.dev.snaplog.navigation.NavGraph
 import com.dev.snaplog.ui.theme.SnapLogTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
             val SnapLogViewModel = SnapLogViewModel(context)
             val screenshotFetchViewmodel = ScreenshotFetchViewmodel()
             SnapLogTheme {
-                View(screenshotFetchViewmodel)
+                NavGraph(SnapLogViewModel,screenshotFetchViewmodel)
             }
         }
     }

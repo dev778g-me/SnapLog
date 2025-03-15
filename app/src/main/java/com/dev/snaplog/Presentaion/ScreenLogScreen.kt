@@ -39,18 +39,7 @@ fun ScreenLogScreen(modifier: Modifier = Modifier) {
     val SnapLogViewModel = SnapLogViewModel(context)
    var recognitionText = SnapLogViewModel.recognizedText.collectAsState()
     // Image Picker Launcher
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) {
-        uri : Uri? ->
-        uri?.let {
-            imageUri = it
-      //       SnapLogViewModel.recognizeText(uri,context)
-           // SnapLogViewModel.recognizeObjects(uri,context)
 
-        }
-
-    }
     Scaffold (
         topBar = {
             TopAppBar(
@@ -67,7 +56,7 @@ fun ScreenLogScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Button(onClick = {
-                launcher.launch("image/*")
+             //   launcher.launch("image/*")
             }) {
                 Text("pick image for ML Testing")
             }

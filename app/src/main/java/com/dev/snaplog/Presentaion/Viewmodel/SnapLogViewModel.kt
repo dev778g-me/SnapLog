@@ -6,10 +6,11 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.net.toUri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.snaplog.Db.ScreenShotDb
-import com.dev.snaplog.constants.Constants
+import com.dev.snaplog.Db.ScreenshotData
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
@@ -26,11 +27,6 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class SnapLogViewModel(context: Context) : ViewModel() {
-    val Const = Constants()
-
-
-
-   // val database = Room.databaseBuilder(context, )
 
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
@@ -40,6 +36,8 @@ class SnapLogViewModel(context: Context) : ViewModel() {
 
     val database = ScreenShotDb.getDatabase(context)
     val screenshotDao = database.getScreenshotDao()
+
+    val screenshot : LiveData<List<ScreenshotData>> = screenshotDao.getAllScreenShotData()
 
     @SuppressLint("SuspiciousIndentation")
     val model = GenerativeModel(
@@ -106,6 +104,20 @@ class SnapLogViewModel(context: Context) : ViewModel() {
             val (title,description,) =  withContext (Dispatchers.IO){
                 extractTitle(response)
             }
+                withContext (Dispatchers.IO){
+                    try {
+                        screenshotDao.insertScreenshotData(ScreenshotData(
+                            id = 0,
+                            title = title,
+                            screenshotPath = paths,
+                            note = "",
+                            description = description
+                        ))
+
+                    }catch (e: Exception) {
+                        println(e.localizedMessage)
+                    }
+                }
 
                 println(mlText)
               //  println(response)

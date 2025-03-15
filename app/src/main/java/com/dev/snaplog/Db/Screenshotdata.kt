@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 data class ScreenshotData(
     @PrimaryKey(autoGenerate = true,)
     val id : Int = 0,
-    val screenshotPath: String,
-    val title: String,
-    val description: String,
+    val screenshotPath: String?,
+    val note : String?,
+    val title: String?,
+    val description: String?,
 )

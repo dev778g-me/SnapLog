@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.serialization)
+ //   kotlin("plugin.serialization") version "1.9.0"
 
 }
 
@@ -78,5 +80,17 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     //Ksp
     ksp(libs.androidx.room.compiler)
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.androidx.room.ktx)
+    // Live data
+    implementation (libs.androidx.runtime)
+    implementation (libs.androidx.runtime.livedata)
+
+    //navigation
+    implementation (libs.androidx.navigation.compose)
+    //serialization
+    implementation(libs.kotlinx.serialization.json.v160)
+    //Permission
+    implementation( libs.accompanist.permissions)
+
+
 }

@@ -31,6 +31,7 @@ class ScreenshotFetchViewmodel : ViewModel() {
             }
         }
         ScreenshotList = screenshotPath
+        println(screenshotPath)
         return screenshotPath
     }
 

@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json.v160)
     //Permission
     implementation( libs.accompanist.permissions)
-
+  //fonts
+    implementation( "androidx.compose.ui:ui-text-google-fonts:1.7.8")
 
 }

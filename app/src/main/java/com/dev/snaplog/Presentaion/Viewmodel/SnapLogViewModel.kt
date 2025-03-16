@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -63,66 +64,73 @@ class SnapLogViewModel(context: Context) : ViewModel() {
 
     }
 
-    fun extractTitle(response: String) : Pair<String, String> {
-        var title = "No Title"
-        var description = StringBuilder()
-        val lines = response.split("\n").map {
-            it.trim()
-        }
-        for (i in response.indices) {
-            val line = lines[i]
-            if (line.startsWith("**Title:**")) {
-                title = line.removePrefix("**Title:**").trim()
-            } else if (line.startsWith("**Description:**")) {
-                for (j in i until lines.size) {
-                    description.append(lines[j]).append("\n")
-                }
-                break
-            }
-        }
-        return Pair(title,description.toString().trim())
+    fun extractTitle(response: String): Pair<String, String> {
+        // Clean up the input by removing log timestamps and identifiers
+        val cleanedResponse = response.replace(
+            Regex("""\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}\s\d+-\d+\sSystem\.out\s+com\.dev\.snaplog\s+I\s+"""),
+            ""
+        )
+
+        // This regex captures everything after "**Title:**" until a newline.
+        val titleRegex = Regex("""\*\*Title:\*\*\s*([^\n]+)""")
+
+        // This regex captures everything after "**Description:**" until the end or another marker
+        val descriptionRegex = Regex("""\*\*Description:\*\*\s*([\s\S]*)$""")
+
+        val titleMatch = titleRegex.find(cleanedResponse)
+        val title = titleMatch?.groupValues?.get(1)?.trim() ?: "No Title"
+
+        val descriptionMatch = descriptionRegex.find(cleanedResponse)
+        val description = descriptionMatch?.groupValues?.get(1)?.trim() ?: "No Description"
+
+        return Pair(title, description)
     }
 
- //function for getting description (all function implementation)
+
+
+
+
+
+
+    //function for getting description (all function implementation)
     fun getDescriptionForAllImages(imagePathList: List<String>,context: Context) {
         viewModelScope.launch {
-            imagePathList.forEach {
-                paths->
-              val imageUri = getImageContentUri(context,paths) ?: paths.toUri()
-                val mlText = withContext(Dispatchers.IO) {
-                    println("the ml extracting text : ${Thread.currentThread().name}")
+            for (path in imagePathList) {
+                //getURi
+                val imageUri = getImageContentUri(context,path) ?: path.toUri()
+
+                // extracting the text
+                val mlText = withContext (Dispatchers.IO){
+                    println("Extraction on thread ${Thread.currentThread().name}")
                     recognizeText(imageUri,context)
                 }
-                if (mlText.isEmpty() ) {
-                    return@forEach
+                if (mlText.isEmpty()) continue
+
+                val response = withContext (Dispatchers.IO){
+                    println("ai Thread ${Thread.currentThread().name}")
+                    generateDesc(mlText)
                 }
 
-                val response = withContext(Dispatchers.IO) {
-                    println("the ai response thread ${Thread.currentThread().name}")
-                    generateDesc(mlText)
-           }
-            val (title,description,) =  withContext (Dispatchers.IO){
-                extractTitle(response)
-            }
-                withContext (Dispatchers.IO){
-                    try {
-                        screenshotDao.insertScreenshotData(ScreenshotData(
-                            id = 0,
-                            title = title,
-                            screenshotPath = paths,
-                            note = "",
-                            description = description
-                        ))
+                val  (title,description) = withContext (Dispatchers.IO){
+                    extractTitle(response)
+                }
 
+                withContext(Dispatchers.IO) {
+                    try {
+                        screenshotDao.insertScreenshotData(
+                            ScreenshotData(
+                                id = 0,
+                                title = title,
+                                screenshotPath = path,
+                                note = "",
+                                description = ""
+                            )
+                        )
                     }catch (e: Exception) {
-                        println(e.localizedMessage)
+                        Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
                     }
                 }
-
-                println(mlText)
-              //  println(response)
-               // println(title)
-                println(description)
+                println(path)
 
             }
         }
@@ -154,7 +162,7 @@ class SnapLogViewModel(context: Context) : ViewModel() {
         return suspendCoroutine { continuation ->
             recognizer.process(image)
                 .addOnSuccessListener { text ->
-                    println("MLKit: Recognized text: ${text.text}")
+
                     continuation.resume(text.text ?: "") // Resume with recognized text
                 }
                 .addOnFailureListener { error ->

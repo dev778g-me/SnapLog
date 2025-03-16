@@ -58,7 +58,7 @@ fun Welcome(navController: NavHostController) {
             when (val status = cameraPermissionState.status) {
                 is PermissionStatus.Granted -> {
                     // Permission granted, show success message
-                    navController.navigate(Routes.Home)
+                    navController.navigate(Routes.Home.route)
                 }
                 is PermissionStatus.Denied -> {
                     if (permissionRequestCompleted) {

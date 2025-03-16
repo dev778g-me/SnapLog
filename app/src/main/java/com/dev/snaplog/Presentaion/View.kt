@@ -1,6 +1,7 @@
 package com.dev.snaplog.Presentaion
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -13,6 +14,7 @@ import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,7 +66,9 @@ import com.dev.snaplog.Db.ScreenshotData
 import com.dev.snaplog.Presentaion.Viewmodel.ScreenshotFetchViewmodel
 import com.dev.snaplog.Presentaion.Viewmodel.SnapLogViewModel
 import com.dev.snaplog.navigation.Routes
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.net.URI
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +76,8 @@ import kotlinx.serialization.json.Json
 fun View(
     screenshotFetchViewmodel: ScreenshotFetchViewmodel,
     snapLogViewModel: SnapLogViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    //onClick: () -> Unit
 ) {
     val visibleItems = remember { mutableStateMapOf<Int, Boolean>() }
     //var screenshots by remember { mutableStateOf(emptyList<String>()) }
@@ -163,7 +168,11 @@ fun View(
                          ),
                          exit = fadeOut(animationSpec = tween(300)) + slideOutVertically()
                      ) {
-                         ScreenShotView(it)
+                         ScreenShotView(it, onClick = {
+                             val screenshotDataJson = Json.encodeToString(it)
+                             val encodeData = Uri.encode(screenshotDataJson)
+                          navController.navigate("${Routes.FullImageScreen.route}/$encodeData")
+                         })
                      }
 
                  }
@@ -172,12 +181,14 @@ fun View(
 }
 
 @Composable
-fun ScreenShotView(imagePath: ScreenshotData, ) {
+fun ScreenShotView(imagePath: ScreenshotData, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable {  }
+            .clickable {
+                onClick.invoke()
+            }
             .shadow(8.dp, RoundedCornerShape(12.dp)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -188,7 +199,7 @@ fun ScreenShotView(imagePath: ScreenshotData, ) {
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                  //  .aspectRatio(16f / 9f)
+                 .aspectRatio(9f / 16f)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )

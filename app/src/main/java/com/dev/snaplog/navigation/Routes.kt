@@ -7,15 +7,15 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
-sealed class Routes {
+sealed class Routes(val route: String) {
     @Serializable
-    data object Home : Routes()
+    data object Home : Routes("Home")
 
      @Serializable
-     data class FullImageScreen(val dataJson: String) : Routes()
+     data object FullImageScreen : Routes("FullView")
 
     @Serializable
-    data object WelcomeScreen : Routes()
+    data object WelcomeScreen : Routes("Welcome")
 
 
 }

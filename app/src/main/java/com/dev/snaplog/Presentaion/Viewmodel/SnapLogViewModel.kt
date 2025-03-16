@@ -123,7 +123,7 @@ class SnapLogViewModel(context: Context) : ViewModel() {
                                 title = title,
                                 screenshotPath = path,
                                 note = "",
-                                description = ""
+                                description = description
                             )
                         )
                     }catch (e: Exception) {

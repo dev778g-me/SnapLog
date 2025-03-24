@@ -1,4 +1,4 @@
-package com.dev.snaplog.navigation
+package com.dev.snaplog.Presentaion.navigation
 
 import androidx.compose.material3.SnackbarData
 import com.dev.snaplog.Db.ScreenshotData

@@ -1,6 +1,7 @@
-package com.dev.snaplog.Presentaion
+package com.dev.snaplog.Presentaion.Screens
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -59,16 +60,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.dev.snaplog.Db.ScreenshotData
 import com.dev.snaplog.Presentaion.Viewmodel.ScreenshotFetchViewmodel
 import com.dev.snaplog.Presentaion.Viewmodel.SnapLogViewModel
-import com.dev.snaplog.navigation.Routes
+import com.dev.snaplog.Presentaion.navigation.Routes
+import com.dev.snaplog.service.Core
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.net.URI
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,38 +92,46 @@ fun View(
     var hasProcessed by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        // Use SharedPreferences to persist the processed flag across app launches
         val prefs = context.getSharedPreferences("ScreenshotPrefs", Context.MODE_PRIVATE)
-        val hasProcessed = prefs.getBoolean("hasProcessed", false)
+
+        // Retrieve previously processed screenshots from SharedPreferences
+        val processedPathsSet = prefs.getStringSet("processedScreenshots", emptySet()) ?: emptySet()
 
         // Get all available screenshots on the device
         val allScreenshotPaths = screenshotFetchViewmodel.getAllScreenshot(context)
         println("Found ${allScreenshotPaths.size} screenshots on device")
 
-        // Get a snapshot of the current processed paths (assumed to be persisted in your database)
+        // Get a snapshot of currently stored processed paths (from DB or list)
         val currentScreenshots = screenshots.toList()
-        val processedPaths = currentScreenshots.map { it.screenshotPath }.toSet()
-        println("Found ${processedPaths.size} processed screenshots in database")
+        val dbProcessedPaths = currentScreenshots.map { it.screenshotPath }.toSet()
+
+        // Merge processed paths from both SharedPreferences and the database
+        val allProcessedPaths = dbProcessedPaths + processedPathsSet
+        println("Found ${allProcessedPaths.size} processed screenshots in database + prefs")
 
         // Filter out screenshots that have already been processed
-        val newPaths = allScreenshotPaths.filter { path ->
-            path !in processedPaths
-        }
+        val newPaths = allScreenshotPaths.filter { path -> path !in allProcessedPaths }
         println("Found ${newPaths.size} new screenshots to process")
 
-        // Update state with new paths
         newScreenShotPath = newPaths
 
-        // Only process new screenshots if they haven't been processed already across app launches
-        if (newPaths.isNotEmpty() && !hasProcessed) {
+        if (newPaths.isNotEmpty()) {
             println("Starting processing of new screenshots")
-            snapLogViewModel.getDescriptionForAllImages(newPaths, context)
-            // Mark as processed in SharedPreferences so the next app launch won't process them again
-            prefs.edit().putBoolean("hasProcessed", true).apply()
+            val intent = Intent(context, Core::class.java).apply {
+                putStringArrayListExtra("imagelist", ArrayList(newPaths))
+            }
+            ContextCompat.startForegroundService(context, intent)
+          //  snapLogViewModel.getDescriptionForAllImages(newPaths, context)
+
+            // Update SharedPreferences with newly processed screenshot paths
+            val updatedProcessedPaths = processedPathsSet.toMutableSet().apply { addAll(newPaths) }
+            prefs.edit().putStringSet("processedScreenshots", updatedProcessedPaths).apply()
         } else {
             println("No new screenshots to process or already processed")
         }
     }
+
+
 
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()

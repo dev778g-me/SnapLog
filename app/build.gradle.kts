@@ -93,6 +93,8 @@ dependencies {
     //Permission
     implementation( libs.accompanist.permissions)
   //fonts
-    implementation( "androidx.compose.ui:ui-text-google-fonts:1.7.8")
+    implementation( libs.androidx.ui.text.google.fonts)
+    //extended Icons
+    implementation( libs.androidx.material.icons.extended)
 
 }

@@ -1,5 +1,9 @@
-package com.dev.snaplog.Presentaion
+package com.dev.snaplog.Presentaion.Screens
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +13,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -22,23 +27,40 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.dev.snaplog.Db.ScreenShotDb
 import com.dev.snaplog.Db.ScreenshotData
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullImage(data: ScreenshotData, navController: NavController) {
+var noteText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val database = ScreenShotDb.getDatabase(context)
+    val screenshotDao = database.getScreenshotDao()
+    var isNotenull by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -62,16 +84,59 @@ fun FullImage(data: ScreenshotData, navController: NavController) {
                 }
 
             )
+        }, bottomBar = {
+            BottomAppBar(
+                actions = {
+
+                    OutlinedTextField(
+                        colors = OutlinedTextFieldDefaults.colors(
+
+                            focusedBorderColor =Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
+                        maxLines = 1,
+                        modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                        value = noteText,
+                        onValueChange = {
+                            it-> noteText = it
+                        },
+                        placeholder = {Text("Add Your Note Here")}
+                        , leadingIcon = {
+                            Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                        }
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+
+                }
+                , floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                       if (noteText.isNotEmpty()) {
+                           scope.launch {
+                               screenshotDao.insertScreenshotData(data.copy(note = noteText))
+                           }
+                       } else{
+                           Toast.makeText(context, "Enter the Note First", Toast.LENGTH_SHORT).show()
+
+                       }
+                        if (data.note== "") {
+                            isNotenull = false
+                        } else{
+                            isNotenull = true
+                        }
+                    })   {
+                        Text(text = "Save")
+                       // Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    }
+                }
+            )
+
         },
 
-        floatingActionButton = { FloatingActionButton(onClick = {}) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-        } },
         contentWindowInsets = WindowInsets(0.dp)
     ){
         paddingValues->
 
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -95,7 +160,15 @@ fun FullImage(data: ScreenshotData, navController: NavController) {
                     )
                 }
             }
+            AnimatedVisibility(
+                visible = isNotenull
+            ) {
 
+            }
+            CardText(
+                title = "Note",
+                description = data.note?:"Add note"
+            )
             CardText(
                title = "Title",
                description = data.title.toString()
@@ -105,6 +178,8 @@ fun FullImage(data: ScreenshotData, navController: NavController) {
                title = "Description",
                description = data.description.toString()
            )
+
+
         }
     }
 

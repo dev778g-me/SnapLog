@@ -19,6 +19,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.max
 
 class SnapLogViewModel(context: Context) : ViewModel() {
 
@@ -87,13 +89,11 @@ class SnapLogViewModel(context: Context) : ViewModel() {
     }
 
 
-
-
-
-
-
+    
     //function for getting description (all function implementation)
     fun getDescriptionForAllImages(imagePathList: List<String>,context: Context) {
+        val maxRequest = 15
+        val delayBetweenRequests = (60 * 1000) / maxRequest
         viewModelScope.launch {
             for (path in imagePathList) {
                 //getURi
@@ -108,6 +108,7 @@ class SnapLogViewModel(context: Context) : ViewModel() {
 
                 val response = withContext (Dispatchers.IO){
                     println("ai Thread ${Thread.currentThread().name}")
+                    delay(1000L)
                     generateDesc(mlText)
                 }
 
@@ -126,9 +127,11 @@ class SnapLogViewModel(context: Context) : ViewModel() {
                                 description = description
                             )
                         )
-                    }catch (e: Exception) {
+                    } catch (e: Exception) {
                         Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
                     }
+
+
                 }
                 println(path)
 
@@ -162,7 +165,6 @@ class SnapLogViewModel(context: Context) : ViewModel() {
         return suspendCoroutine { continuation ->
             recognizer.process(image)
                 .addOnSuccessListener { text ->
-
                     continuation.resume(text.text ?: "") // Resume with recognized text
                 }
                 .addOnFailureListener { error ->

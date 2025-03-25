@@ -33,7 +33,7 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 ### Steps
 1. Clone the repository:
    ```sh
-  [ git clone https://github.com/yourusername/screen-log.git](https://github.com/dev778g-me/SnapLog.git)
+  [ git clone https://github.com/yourusername/screen-log.git](https://github.com/dev778g-me/SnapLog.git)]
 
   or download the zip file
    ```

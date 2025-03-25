@@ -44,12 +44,7 @@ import androidx.navigation.NavHostController
 import com.dev.snaplog.Presentaion.Viewmodel.PermissionViewmodel
 import com.dev.snaplog.Presentaion.navigation.Routes
 import com.dev.snaplog.R
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Welcome(navController: NavHostController) {
     val permissionToRequest = arrayOf(

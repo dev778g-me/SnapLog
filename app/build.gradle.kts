@@ -7,14 +7,13 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
- //   kotlin("plugin.serialization") version "1.9.0"
+    //   kotlin("plugin.serialization") version "1.9.0"
 
 }
 
 android {
     namespace = "com.dev.snaplog"
     compileSdk = 35
-
     defaultConfig {
         applicationId = "com.dev.snaplog"
         minSdk = 27
@@ -24,14 +23,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-       val properties = Properties()
-       properties.load(project.rootProject.file("local.properties").inputStream() )
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+             isMinifyEnabled = true
+               isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -90,11 +90,12 @@ dependencies {
     implementation (libs.androidx.navigation.compose)
     //serialization
     implementation(libs.kotlinx.serialization.json.v160)
-    //Permission
-    implementation( libs.accompanist.permissions)
+
   //fonts
     implementation( libs.androidx.ui.text.google.fonts)
     //extended Icons
     implementation( libs.androidx.material.icons.extended)
+    // transition animation
+
 
 }

@@ -77,6 +77,7 @@ processQueue()
 
    suspend fun recognizeText(imageUri: Uri, context: Context): String{
          val image = InputImage.fromFilePath(context, imageUri)
+       //coroutine starts
         return suspendCoroutine {
             continuation ->
             textRecognizer.process(image).addOnSuccessListener {
@@ -103,10 +104,11 @@ processQueue()
     }
 
 
-    suspend fun getDescriptionForAllImages(imagePathList: List<String> , context: Context){
-      imagePathList.forEach {
-          imagePath->
+    suspend fun getDescriptionForAllImages(imagePathList: List<String> , context: Context,progresscallback: (Int) -> Unit){
+      imagePathList.forEachIndexed {
+      index,    imagePath->
           processingQueue.send(imagePath to context)
+          progresscallback(index +1)
       }
     }
     private suspend fun processQueue (){
@@ -116,14 +118,16 @@ processQueue()
           val screenshotDao = database.getScreenshotDao()
 
           val imageUri = getImageContentUri(context,path) ?: path.toUri()
-
+            // runs on io thread
           val extractedMlText = withContext(Dispatchers.IO) {
+              println("ocr thread: ${ Thread.currentThread().name }")
               recognizeText(imageUri,context)
           }
             if (extractedMlText.isEmpty()) continue
-
+            // runs on io thread
           val aiResponse = try {
               withContext(Dispatchers.IO) {
+                  println("the gemini thread : ${ Thread.currentThread().name }")
                   chat.sendMessage(extractedMlText).text.toString()
               }
           }catch (e: Exception){
@@ -136,7 +140,9 @@ processQueue()
 
 
               // saving in database
+          //runs on io thread
           withContext(Dispatchers.IO) {
+              println("room db save thread: ${ Thread.currentThread().name }")
               val screenshotdata = ScreenshotData(
                   title = title,
                   description = desc,
@@ -150,6 +156,7 @@ processQueue()
                  println("error inserting data${e.localizedMessage}")
              }
           }
+
       }
         delay(10000L)
     }

@@ -27,24 +27,9 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 ## 🔧 Installation
 
 ### Prerequisites
-- Android Studio installed ([Download Android Studio](https://developer.android.com/studio))
-- Android Emulator or a Physical Device
-
-### Steps
-1. Clone the repository:
-   ```sh
-  [ git clone https://github.com/yourusername/screen-log.git](https://github.com/dev778g-me/SnapLog.git)]
-
-  or download the zip file
-   ```
-2. Open the project in Android Studio.
-3. Sync Gradle dependencies.
-4. Build and run the app on an emulator or physical device.
-
-## 📜 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Android Studio installed (git clone https://github.com/dev778g-me/SnapLog.git(LICENSE) file for details.
 
 ## 📬 Contact
 For any questions or feedback, feel free to reach out:
-- **Twitter/X**:[ [@yourhandle](https://twitter.com/yourhandle)](https://x.com/Dev778g)
-- **Email**: sanji778g@gmail.com
+- **Twitter/X**: [@yourhandle](https://twitter.com/yourhandle)
+- **Email**: your.email@example.com

@@ -15,7 +15,9 @@ import kotlinx.coroutines.launch
 
 class Core : Service(){
 
-
+    private val notificationId = 1
+    private val channelId = "snaplog"
+    private lateinit var notificationManager: NotificationManager
     //ON BIND foreground service
     override fun onBind(intent: Intent?): IBinder? {
         TODO("Not yet implemented")
@@ -33,8 +35,10 @@ class Core : Service(){
         val imagelist = intent?.getStringArrayListExtra("imagelist") ?: arrayListOf()
         // launch corotine
         CoroutineScope(Dispatchers.IO).launch {
+            startForeground(notificationId,createProgressNotification(0,imagelist.size))
             SnapLogRepo.getDescriptionForAllImages(imagelist,this@Core)
         }
+        stopSelf()
 
         return START_STICKY
     }
@@ -43,6 +47,16 @@ class Core : Service(){
     override fun onDestroy() {
         super.onDestroy()
     }
+
+    private fun createProgressNotification(progress: Int, max: Int) =
+        NotificationCompat.Builder(this,channelId)
+            .setContentTitle("Snaplog")
+            .setContentText("Scanning screenshots")
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setProgress(max,progress,false)
+            .setOngoing(true)
+            .build()
+
 
     private fun startForegroundService(){
         val notificationId = "snaplog"

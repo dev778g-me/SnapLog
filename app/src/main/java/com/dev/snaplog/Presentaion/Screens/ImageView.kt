@@ -61,6 +61,7 @@ var noteText by remember { mutableStateOf("") }
     val screenshotDao = database.getScreenshotDao()
     var isNotenull by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var screenshotData by remember { mutableStateOf(data) }
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -112,7 +113,13 @@ var noteText by remember { mutableStateOf("") }
                     FloatingActionButton(onClick = {
                        if (noteText.isNotEmpty()) {
                            scope.launch {
-                               screenshotDao.insertScreenshotData(data.copy(note = noteText))
+                               val updatedData = screenshotData.copy(note = noteText)
+                               screenshotDao.insertScreenshotData(updatedData)
+                               // Update the state to trigger recomposition
+                               screenshotData = updatedData
+                               Toast.makeText(context, "Note Saved!", Toast.LENGTH_SHORT).show()
+                               isNotenull =true
+                               noteText = ""
                            }
                        } else{
                            Toast.makeText(context, "Enter the Note First", Toast.LENGTH_SHORT).show()
@@ -160,14 +167,12 @@ var noteText by remember { mutableStateOf("") }
                     )
                 }
             }
-            AnimatedVisibility(
-                visible = isNotenull
-            ) {
+            AnimatedVisibility(visible = screenshotData.note?.isNotEmpty() == true) {
 
             }
             CardText(
                 title = "Note",
-                description = data.note?:"Add note"
+                description = screenshotData.note?:"Add note"
             )
             CardText(
                title = "Title",

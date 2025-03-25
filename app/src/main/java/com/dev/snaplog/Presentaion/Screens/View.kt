@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -45,6 +47,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,6 +72,7 @@ import com.dev.snaplog.Presentaion.Viewmodel.ScreenshotFetchViewmodel
 import com.dev.snaplog.Presentaion.Viewmodel.SnapLogViewModel
 import com.dev.snaplog.Presentaion.navigation.Routes
 import com.dev.snaplog.service.Core
+import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -81,7 +85,8 @@ fun View(
     navController: NavHostController,
     //onClick: () -> Unit
 ) {
-    val visibleItems = remember { mutableStateMapOf<Int, Boolean>() }
+    val listState = rememberLazyGridState()
+    val visibleItems = rememberSaveable { mutableStateOf(mutableMapOf<Int, Boolean>()) }
     //var screenshots by remember { mutableStateOf(emptyList<String>()) }
     val context = LocalContext.current
     // Observe LiveData from ViewModel
@@ -92,44 +97,46 @@ fun View(
     var hasProcessed by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences("ScreenshotPrefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val isFirstLaunch = prefs.getBoolean("isFirstLaunch", true)
 
-        // Retrieve previously processed screenshots from SharedPreferences
-        val processedPathsSet = prefs.getStringSet("processedScreenshots", emptySet()) ?: emptySet()
+        if (isFirstLaunch) {
+            val processedPathsSet = prefs.getStringSet("processedScreenshots", emptySet()) ?: emptySet()
 
-        // Get all available screenshots on the device
-        val allScreenshotPaths = screenshotFetchViewmodel.getAllScreenshot(context)
-        println("Found ${allScreenshotPaths.size} screenshots on device")
+            val allScreenshotPaths = screenshotFetchViewmodel.getAllScreenshot(context)
+            println("Found ${allScreenshotPaths.size} screenshots on device")
 
-        // Get a snapshot of currently stored processed paths (from DB or list)
-        val currentScreenshots = screenshots.toList()
-        val dbProcessedPaths = currentScreenshots.map { it.screenshotPath }.toSet()
+            val currentScreenshots = screenshots.toList()
+            val dbProcessedPaths = currentScreenshots.map { it.screenshotPath }.toSet()
 
-        // Merge processed paths from both SharedPreferences and the database
-        val allProcessedPaths = dbProcessedPaths + processedPathsSet
-        println("Found ${allProcessedPaths.size} processed screenshots in database + prefs")
+            val allProcessedPaths = dbProcessedPaths + processedPathsSet
+            println("Found ${allProcessedPaths.size} processed screenshots in database + prefs")
 
-        // Filter out screenshots that have already been processed
-        val newPaths = allScreenshotPaths.filter { path -> path !in allProcessedPaths }
-        println("Found ${newPaths.size} new screenshots to process")
+            val newPaths = allScreenshotPaths.filter { path -> path !in allProcessedPaths }
+            println("Found ${newPaths.size} new screenshots to process")
 
-        newScreenShotPath = newPaths
+            newScreenShotPath = newPaths
 
-        if (newPaths.isNotEmpty()) {
-            println("Starting processing of new screenshots")
-            val intent = Intent(context, Core::class.java).apply {
-                putStringArrayListExtra("imagelist", ArrayList(newPaths))
+            if (newPaths.isNotEmpty()) {
+                println("Starting processing of new screenshots")
+                val intent = Intent(context, Core::class.java).apply {
+                    putStringArrayListExtra("imagelist", ArrayList(newPaths))
+                }
+                // all the function runs on the foregroundservice
+                ContextCompat.startForegroundService(context, intent)
+
+                val updatedProcessedPaths = processedPathsSet.toMutableSet().apply { addAll(newPaths) }
+                prefs.edit()
+                    .putStringSet("processedScreenshots", updatedProcessedPaths)
+                    .putBoolean("isFirstLaunch", false) // Set flag to false after running
+                    .apply()
+            } else {
+                println("No new screenshots to process or already processed")
+                prefs.edit().putBoolean("isFirstLaunch", false).apply() // Set flag even if no new images
             }
-            ContextCompat.startForegroundService(context, intent)
-          //  snapLogViewModel.getDescriptionForAllImages(newPaths, context)
-
-            // Update SharedPreferences with newly processed screenshot paths
-            val updatedProcessedPaths = processedPathsSet.toMutableSet().apply { addAll(newPaths) }
-            prefs.edit().putStringSet("processedScreenshots", updatedProcessedPaths).apply()
-        } else {
-            println("No new screenshots to process or already processed")
         }
     }
+
 
 
 
@@ -156,7 +163,9 @@ fun View(
         contentWindowInsets = WindowInsets(0.dp)
 
          ){ paddingValues ->
+
              LazyVerticalGrid(
+                 state = listState,
                  modifier = Modifier
                      .fillMaxSize()
                      .padding(paddingValues)
@@ -166,11 +175,15 @@ fun View(
                  flingBehavior = ScrollableDefaults.flingBehavior()
              ) {
                  items(screenshots, key = {it.id}) {
-                     val isVisible by remember { derivedStateOf { visibleItems[it.id] ?: false } }
+                     val isVisible by remember { derivedStateOf { visibleItems.value[it.id] ?: false } }
 
-                     LaunchedEffect(it.id * 50L) {
-                         visibleItems[it.id] = true
+                     LaunchedEffect(Unit) {
+                         if (visibleItems.value[it.id] == null) { // Only trigger animation if not already visible
+                             delay(50L * it.id.coerceAtMost(10))
+                             visibleItems.value = visibleItems.value.toMutableMap().apply { put(it.id, true) }
+                         }
                      }
+
                      AnimatedVisibility(
                          visible = isVisible,
                          enter = fadeIn(animationSpec = tween(500)) + slideInVertically(

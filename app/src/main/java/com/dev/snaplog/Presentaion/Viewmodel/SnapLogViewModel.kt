@@ -100,12 +100,14 @@ class SnapLogViewModel(context: Context) : ViewModel() {
                 val imageUri = getImageContentUri(context,path) ?: path.toUri()
 
                 // extracting the text
+                //runs on IO thread
                 val mlText = withContext (Dispatchers.IO){
                     println("Extraction on thread ${Thread.currentThread().name}")
                     recognizeText(imageUri,context)
                 }
                 if (mlText.isEmpty()) continue
 
+                //runs on io thread
                 val response = withContext (Dispatchers.IO){
                     println("ai Thread ${Thread.currentThread().name}")
                     delay(1000L)
@@ -115,7 +117,7 @@ class SnapLogViewModel(context: Context) : ViewModel() {
                 val  (title,description) = withContext (Dispatchers.IO){
                     extractTitle(response)
                 }
-
+               // runs on io thread
                 withContext(Dispatchers.IO) {
                     try {
                         screenshotDao.insertScreenshotData(

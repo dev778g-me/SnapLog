@@ -60,5 +60,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📬 Contact
 For any questions or feedback, feel free to reach out:
-- **Twitter/X**: [@yourhandle](https://twitter.com/yourhandle)
-- **Email**: your.email@example.com
+- **Twitter/X**: [@Dev778g](https://x.com/Dev778g)
+- **Email**: sanji778g@gmail.com

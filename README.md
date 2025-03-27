@@ -21,7 +21,7 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 <p align="center">
   <b>AI Title and Description and Notes</b><br>
   <img src="https://github.com/dev778g-me/SnapLog/blob/bc1192c6ebdfae3448b1851e514561f007c6ce3c/Screenshot_20250327-163653_SnapLog.png" width="400" />
-  <img src="https://github.com/dev778g-me/SnapLog/blob/bc1192c6ebdfae3448b1851e514561f007c6ce3c/Screenshot_20250327-163646_SnapLog.png" width="400" />
+  <img src="https://github.com/dev778g-me/SnapLog/blob/4c46bf131ca1d3be57f0faf5142f5dd636c44884/Screenshot_20250327-163728_SnapLog.png" width="400" />
 </p>
 
 ## 📦 Tech Stack

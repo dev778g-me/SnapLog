@@ -10,17 +10,17 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 - 🔍 **Search & Organize** – Quickly find screenshots using AI-generated metadata.
 - 🔐 **Local Storage** – Ensures complete privacy, no cloud dependency.
 
-## 📷 How It Works
+## 📷 Screenshots
 
-1. **Auto-Scan** – The app scans your device for new screenshots.
-2. **AI Processing** – Screenshots are analyzed to generate relevant insights.
-3. **User Notes** – Users can manually add notes for better organization.
-4. **Quick Search** – Retrieve screenshots effortlessly with AI-based indexing.
+Take a look at **Screen Log** in action!
 
-##Screenshots
-![imagealt](https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png)
-![imagealt](https://github.com/dev778g-me/SnapLog/blob/3f696e5d22d72cf1efd820e78d24691702433d04/Screenshot_20250327-163728_SnapLog.png)
+| Home Screen | Screenshot Insights |
+|-------------|---------------------|
+| ![Home Screen](https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png) | ![Insights Screen](https://github.com/dev778g-me/SnapLog/blob/3f696e5d22d72cf1efd820e78d24691702433d04/Screenshot_20250327-163728_SnapLog.png) |
 
+- 📂 **Organized Screenshot List** – View and manage all your screenshots in one place.
+- 🤖 **AI-Powered Insights** – Automatically extracts key information from screenshots.
+- 📝 **Custom Notes** – Easily annotate and categorize screenshots for future reference.
 
 ## 📦 Tech Stack
 

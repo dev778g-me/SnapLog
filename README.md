@@ -14,9 +14,10 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 
 Take a look at **Screen Log** in action!
 
-| Home Screen | Screenshot Insights |
-|-------------|---------------------|
-| ![Home Screen](https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png) | ![Insights Screen](https://github.com/dev778g-me/SnapLog/blob/3f696e5d22d72cf1efd820e78d24691702433d04/Screenshot_20250327-163728_SnapLog.png) |
+<p align="center">
+  <img src="https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png" width="400" />
+  <img src="https://github.com/dev778g-me/SnapLog/blob/3f696e5d22d72cf1efd820e78d24691702433d04/Screenshot_20250327-163728_SnapLog.png" width="400" />
+</p>
 
 - 📂 **Organized Screenshot List** – View and manage all your screenshots in one place.
 - 🤖 **AI-Powered Insights** – Automatically extracts key information from screenshots.

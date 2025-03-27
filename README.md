@@ -17,6 +17,9 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 3. **User Notes** – Users can manually add notes for better organization.
 4. **Quick Search** – Retrieve screenshots effortlessly with AI-based indexing.
 
+##Screenshots
+![imagealt](https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png)
+
 ## 📦 Tech Stack
 
 - **Kotlin** – Modern programming language for Android development

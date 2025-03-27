@@ -12,20 +12,12 @@ Screen Log is an AI-powered screenshot manager that helps you organize, analyze,
 
 ## 📷 Screenshots
 
-### 📂 Organized Screenshot List
 <p align="center">
+  <b>📂 Organized Screenshot List</b><br>
   <img src="https://github.com/dev778g-me/SnapLog/blob/af9612ee44bfd252143d10d9a720e4bcdc6e2c28/Screenshot_20250327-163431_SnapLog.png" width="400" />
-</p>
-
-### AI Title Description
-<p align="center">
-  <img src="https://github.com/dev778g-me/SnapLog/blob/d7777efb22bd8d325aa9e18306618ff2d643c198/Screenshot_20250327-163653_SnapLog.png" width="400" />
-</p>
-
-### Adding Notes
-<p align="center">
   <img src="https://github.com/dev778g-me/SnapLog/blob/3f696e5d22d72cf1efd820e78d24691702433d04/Screenshot_20250327-163728_SnapLog.png" width="400" />
 </p>
+
 ## 📦 Tech Stack
 
 - **Kotlin** – Modern programming language for Android development

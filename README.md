@@ -15,6 +15,16 @@ Inspired by Pixel SS, it scans your screenshots, generates AI insights, and lets
 
 ---
 
+## 📥 How to Use
+
+1. Visit the [Releases](https://github.com/dev778g-me/SnapLog/releases) section of this repository  
+2. Download the latest `.apk` file  
+3. Install it on your Android device  
+4. Grant storage permissions when prompted  
+5. SnapLog will automatically scan and organize your screenshots
+
+---
+
 ## 📷 UI Preview
 
 ### 🛂 Permission Handling & Home
@@ -31,23 +41,24 @@ Inspired by Pixel SS, it scans your screenshots, generates AI insights, and lets
 
 ---
 
-## 🧰 Built With
+## 📦 Tech Stack
 
-- 🟣 **Kotlin** – Modern Android development language  
-- 🧩 **Jetpack Compose** – Declarative UI toolkit  
-- 🧠 **ML Kit** – On-device machine learning for OCR  
-- 🔮 **Gemini API** – AI insight generation from screenshots  
+- **Kotlin** – Modern programming language for Android development  
+- **Jetpack Compose** – Declarative UI toolkit for building native Android UIs  
+- **ML Kit** – On-device machine learning for image processing and text recognition  
+- **Gemini API** – AI-powered API for generating intelligent insights from screenshots  
 
 ---
 
-## ⚙️ Getting Started
+## 🛠 Installation (For Developers)
 
-### ✅ Prerequisites
-- Android Studio: [Download](https://developer.android.com/studio)  
-- Git  
-- Emulator or USB-connected Android device
+### Prerequisites
 
-### 🚦 Installation
+- Android Studio installed – [Download](https://developer.android.com/studio)  
+- Git installed  
+- Android Emulator or Physical Device
+
+### Steps
 
 ```bash
 git clone https://github.com/dev778g-me/SnapLog.git
